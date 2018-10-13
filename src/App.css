@@ -1,0 +1,134 @@
+/*.App {
+  text-align: center;
+}*/
+body{
+	font-size:80% ;  /*-- Enables font size scaling in MSIE  --*/
+	background:#FFFFFF url(./images/body_bg.jpg) repeat-x 0 0;
+	margin:0;
+	padding:0;
+	font:normal 13px Trebuchet MS; 
+	}
+ /* HEADER */
+#header {
+	height:98px;
+	}
+/* LOGO */
+#selLogo {
+	width:199px;
+	padding:15px 0 0 0;
+	}
+#selLogo h1 {
+	background:url(./images/logo.jpg) no-repeat 0 0;
+	}
+#selLogo h1 a {
+	display:block;
+	height:61px;
+	overflow:hidden;
+	text-indent:-1000em;
+	width:200px;
+	}
+/* END OF LOGO */
+/* MENUS */
+.clswrapper {
+    width: 923px;
+    margin: 0 auto;
+}
+.clsMenu ul {
+	margin-top:20px;
+	}
+.clsMenu li {
+	background:url(./images/menu_li.jpg) no-repeat right;
+	display:inline;
+	padding:0 15px 5px;
+}
+.clsMenu li a {
+	font-weight:normal;
+	color:#d2cece;
+	}
+.clsMenu li a:hover {
+	text-decoration:underline;
+	}
+.clsMenu li a:hover, .clsActive {
+	color:#6cad09;
+	}
+.active {
+	color: #6cad09 !important;
+}
+.login {
+	  width: 51px;
+    height: 22px;
+		padding: 0 !important;
+		font-size: 12px !important;
+    line-height: 5px !important;
+}
+/* END OF MENUS */
+/* END OF HEADER */
+  .clearfix {
+    display: block;
+}
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+/* End hide from IE-mac */
+.clsFloatLeft{
+	float:left;
+	}
+  #banner {
+	background:url(./images/banner.jpg) no-repeat 0 0;
+	height:274px;
+	margin-top:2px;
+	}
+  .clsReadmore {
+    margin: 28px 0 0 5px;
+    background: url(./images/read_more_1.jpg) no-repeat left center;
+    height: 22px;
+    width: 73px;
+    line-height: 20px;
+}
+
+.clsReadmore a {
+	color:#FFFFFF;
+	float:left;
+	padding-left:8px;
+	text-decoration:none;
+	text-align:center;
+	}
+.clsReadmore a:hover {
+	text-decoration:none;
+	}
+.clsBannerText {
+	padding:135px 420px 0 10px;
+	font:12px Arial;
+	line-height:19px;
+	}
+.clsFloatRight{
+	float:right;
+	}
+.clsMenu .clsNoBorder ,.clsFooter_menu .clsNoBorder {
+	background:none;
+	}
+/* END OF COMMON CSS */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
