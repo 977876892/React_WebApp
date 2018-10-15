@@ -3,11 +3,13 @@ import { Redirect } from 'react-router';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import './signup.css';
 class Signup extends Component {
-	constructor() {
-		super();
+	 isLoggedIn = false;	   		
+	constructor(props) {
+		super(props);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.state = {
-           errors: {}
+           errors: {},
+		   loader: false
        }
 	}
   handleSubmit(event) {
@@ -47,23 +49,28 @@ class Signup extends Component {
 	} else if (formData.password !== formData.oldpassword) {
        errors["pwdnotmatch"] = "Passwords does not match.";
 	} else {
+		window.scroll(0,0);	
+		this.setState({ loader: true });
 		const data = new FormData(event.target);
 		data.set('userdata', JSON.stringify(formData));
 		fetch('http://localhost:8080/api/signup', {
 			method: 'post',
 			body: data
-		}).then(function(response) {
-			return response.json();
+		}).then(response => {
+			if (response.status >= 200 && response.status < 300) {
+			    this.setState({ loader: false });				
+				document.getElementById("clear-form").reset();
+				ToastStore.success('Hey, You have registered successfully. !');				
+				return response.json();
+			}
 		}).catch(error =>
-		ToastStore.success('Sorry, There was an error. !')
-		).then(function(data) {
-			ToastStore.success('Hey, You have registered successfully. !');
-			document.getElementById("clear-form").reset();
-		});
+		    ToastStore.success('Sorry, There was an error. !'),
+		     this.setState({ loader: false })			
+		)
 	}
 	this.setState({errors: errors});
   }
-
+  
 	removeError = (name) => {
 		let errors = {};
 		errors[name] = '';
@@ -74,6 +81,18 @@ class Signup extends Component {
         navigate: false
     }
    render() {
+	   const { loader } = this.state;
+	   let buttLoad;
+	   let overlay;
+	   if (loader) {
+	      buttLoad = <div className="loader"></div>;
+		  overlay= <div className="overlay"></div>;			
+		  
+        } else {
+		   buttLoad = <div className=""></div>;
+		   overlay= <div className=""></div>;
+		}
+
         const { navigate } = this.state
 
     // here is the important part
@@ -82,6 +101,7 @@ class Signup extends Component {
         }
        return (
            <div className="signup">
+			   {buttLoad}
 			<div className="row main">
 				<div className="panel-heading">
 	               <div className="panel-title text-center">
@@ -225,7 +245,8 @@ class Signup extends Component {
 					</form>
 				</div>
 			</div>
-            <ToastContainer store={ToastStore}/>			
+            <ToastContainer store={ToastStore}/>
+			{overlay}
 		</div>
        );
    }
