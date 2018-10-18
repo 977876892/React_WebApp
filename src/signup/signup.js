@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import {ToastContainer, ToastStore} from 'react-toasts';
+import {  Link  } from 'react-router-dom';
 import './signup.css';
 class Signup extends Component {
-	 isLoggedIn = false;	   		
 	constructor(props) {
 		super(props);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.state = {
            errors: {},
-		   loader: false
+		   loader: false,
+		   navigate: false
        }
 	}
   handleSubmit(event) {
@@ -49,7 +50,7 @@ class Signup extends Component {
 	} else if (formData.password !== formData.oldpassword) {
        errors["pwdnotmatch"] = "Passwords does not match.";
 	} else {
-		window.scroll(0,0);	
+		// window.scroll(0,0);	
 		this.setState({ loader: true });
 		const data = new FormData(event.target);
 		data.set('userdata', JSON.stringify(formData));
@@ -57,15 +58,19 @@ class Signup extends Component {
 			method: 'post',
 			body: data
 		}).then(response => {
-			if (response.status >= 200 && response.status < 300) {
-			    this.setState({ loader: false });				
+				return response.json();			
+		}).then(function (result) {
+			if (result.message === 'user alredy registered') {
+			    ToastStore.warning('Sorry,Username alredy exist, please change the user name.');		
+			}else  {
 				document.getElementById("clear-form").reset();
-				ToastStore.success('Hey, You have registered successfully. !');				
-				return response.json();
+				ToastStore.success('Hey, You have registered successfully. !');	
+				window.location.href = '/login';
 			}
-		}).catch(error =>
-		    ToastStore.success('Sorry, There was an error. !'),
-		     this.setState({ loader: false })			
+		
+        }).catch(error =>
+		    ToastStore.error('Sorry, There was an error. !'),
+		     this.setState({ loader: false }),			
 		)
 	}
 	this.setState({errors: errors});
@@ -77,9 +82,6 @@ class Signup extends Component {
 		this.setState({errors: errors});
 	}
 
-    state = {
-        navigate: false
-    }
    render() {
 	   const { loader } = this.state;
 	   let buttLoad;
@@ -97,7 +99,7 @@ class Signup extends Component {
 
     // here is the important part
         if (navigate) {
-        return <Redirect to="/about" push={true} />
+        return <Redirect to="/login" push={true} />
         }
        return (
            <div className="signup">
@@ -240,7 +242,7 @@ class Signup extends Component {
 							<button type="button" onClick={this.handleSubmit} className="btn btn-primary btn-lg btn-block login-button">Register</button>
 						</div>
 						<div className="login-register">
-				            <a onClick={() => this.setState({ navigate: true })}>Login</a>
+				            <a style={{cursor: "pointer"}} onClick={() => this.setState({ navigate: true })}>Login</a>
 				         </div>
 					</form>
 				</div>

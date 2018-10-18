@@ -2,8 +2,23 @@ import React, { Component } from 'react';
 import Home from '../home/home';
 import About from '../about/about';
 import Signup from '../signup/signup';
+import Login from '../login/login';
+import {ToastContainer, ToastStore} from 'react-toasts';
 import { BrowserRouter as Router, Switch, Route, Link,NavLink  } from 'react-router-dom';
 class Header extends Component {
+    constructor() {
+        super()
+        this.logout = this.logout.bind(this);
+        this.state = {
+            localstoragedata: JSON.parse(localStorage.getItem('user_details')) ? JSON.parse(localStorage.getItem('user_details'))['username'] : null
+        }
+    }
+    logout(event) {
+        event.preventDefault();
+        localStorage.removeItem('user_details');
+        this.setState({localstoragedata:null})
+        ToastStore.success('Hey, You have logout successfully. !');
+    }
     render(){
         return(
             <div className="Head">
@@ -15,15 +30,20 @@ class Header extends Component {
                         </div>
                         <div className="clsMenu clsFloatRight">
                         <ul>
-                            <li><NavLink to={'/home'} activeClassName="active">Home</NavLink></li>
-                            <li><NavLink to={'/about'} activeClassName="active">About us</NavLink></li>
-                            <li><a href="services.html">Services</a></li>
-                            <li><a href="solutions.html">Solutions</a></li>
-                            <li className="clsNoBorder"><a href="contacts.html">Contacts</a></li>
+                            { this.state.localstoragedata !== null ?
+                                <span>
+                                    <li><NavLink to={'/home'} activeClassName="active">Home</NavLink></li>
+                                    <li><NavLink to={'/about'} activeClassName="active">About us</NavLink></li>
+                                    <li><Link to="" >Services</Link></li>
+                                    <li><Link to="">Solutions</Link></li>
+                                    <li className="clsNoBorder"><a href="contacts.html">Profile</a></li>
+                                </span>
+                            : null }
                             <li  className="clsNoBorder">
-                                <button type="button" className="btn  btn-primary login">Login</button>
+                                { !this.state.localstoragedata ? <NavLink to={'/login'} ><button type="button" className="btn  btn-primary login">Login</button></NavLink> : null }
+                                { this.state.localstoragedata !== null ? <button type="button" className="btn  btn-default login" onClick={this.logout} >Logout</button> : null }
                                 &nbsp;&nbsp;
-                               <NavLink to={'/signup'} ><button type="button" className="btn btn-info login">Signup</button></NavLink>
+                              { !this.state.localstoragedata ?  <NavLink to={'/signup'} ><button type="button" className="btn btn-info login">Signup</button></NavLink> : null }
                                 </li>
                         </ul>
                        {/*<Switch>
@@ -40,8 +60,10 @@ class Header extends Component {
                         <Route exact path="/home" component={Home} />
                         <Route path="/about" component={About} />
                         <Route path="/signup" component={Signup} />
+                        <Route path="/login" component={Login} />
                  </div>
-            </Router>                                       
+            </Router>      
+            <ToastContainer store={ToastStore}/>                                 
             </div>
         );
     }
