@@ -43,7 +43,10 @@ class Login extends Component {
                     'full_name' : result.data.FirstName + ' ' + result.data.LastName,
                     'fname':result.data.FirstName,
                     'lname':result.data.LastName,
-                    'email':result.data.Email
+                    'email':result.data.Email,
+                    'id':result.data.Id,
+                    'phone':result.data.Phone,
+                    'address':result.data.Address
                   }))
 				document.getElementById("clear-form").reset();
 				ToastStore.success('Hey, You have login successfully. !');

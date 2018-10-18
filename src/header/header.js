@@ -3,6 +3,7 @@ import Home from '../home/home';
 import About from '../about/about';
 import Signup from '../signup/signup';
 import Login from '../login/login';
+import Profile from '../profile/profile';
 import {ToastContainer, ToastStore} from 'react-toasts';
 import { BrowserRouter as Router, Switch, Route, Link,NavLink  } from 'react-router-dom';
 class Header extends Component {
@@ -36,7 +37,7 @@ class Header extends Component {
                                     <li><NavLink to={'/about'} activeClassName="active">About us</NavLink></li>
                                     <li><Link to="" >Services</Link></li>
                                     <li><Link to="">Solutions</Link></li>
-                                    <li className="clsNoBorder"><a href="contacts.html">Profile</a></li>
+                                    <li className="clsNoBorder"><NavLink to={'/profile'} activeClassName="active">Profile</NavLink></li>
                                 </span>
                             : null }
                             <li  className="clsNoBorder">
@@ -61,6 +62,7 @@ class Header extends Component {
                         <Route path="/about" component={About} />
                         <Route path="/signup" component={Signup} />
                         <Route path="/login" component={Login} />
+                        <Route path="/profile" component={Profile} />
                  </div>
             </Router>      
             <ToastContainer store={ToastStore}/>                                 
