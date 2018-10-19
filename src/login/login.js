@@ -35,7 +35,6 @@ class Login extends Component {
 		 }).then(function(response) {
 				return response.json();             
 		  }).then(function (result) {
-               console.log(result);
             if (result.status) {
                 localStorage.setItem('user_details',
                  JSON.stringify( {

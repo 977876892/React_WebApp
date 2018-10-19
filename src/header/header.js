@@ -18,6 +18,7 @@ class Header extends Component {
         event.preventDefault();
         localStorage.removeItem('user_details');
         this.setState({localstoragedata:null})
+        window.location.href = '/';
         ToastStore.success('Hey, You have logout successfully. !');
     }
     render(){
@@ -57,12 +58,21 @@ class Header extends Component {
                         <p className="clsBannerText">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage.</p>
                         <p className="clsReadmore"><Link to="">Readmore</Link></p>
                     </div>
-                        <Route exact path="/" component={Home} />
-                        <Route exact path="/home" component={Home} />
-                        <Route path="/about" component={About} />
-                        <Route path="/signup" component={Signup} />
-                        <Route path="/login" component={Login} />
-                        <Route path="/profile" component={Profile} />
+                    { this.state.localstoragedata !== null ?
+                        <span>
+                                <Route exact path="/" component={Home} />
+                                <Route exact path="/home" component={Home} />
+                                <Route path="/about" component={About} />
+                                <Route path="/profile" component={Profile} />
+                        </span>
+                        : 
+                        <span>
+                            <Route exact path="/" component={Login} />
+                            <Route path="/signup" component={Signup} />
+                            <Route path="/login" component={Login} />
+                            <Route path="*" component={Login} />
+                        </span>
+                         }
                  </div>
             </Router>      
             <ToastContainer store={ToastStore}/>                                 

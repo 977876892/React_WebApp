@@ -21,26 +21,54 @@ class Profile extends Component {
     }
     commonsave(e) {
         e.preventDefault();
-        const data = new FormData(e.target);
-	    data.set('userdata', JSON.stringify(this.state.userdata));
-        fetch('http://localhost:8080/api/profile/update', {
-			method: 'post',
-			body: data
-		 }).then(function(response) {
-				return response.json();             
-		  }).then(function (result) {
-               console.log(result);
-          }).catch(error =>
-		    ToastStore.error('Sorry, There was an error. !')
-	    	)
-        console.log(this.state.userdata)
+       const EMAIL_REGEXP = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!this.state.userdata.fname) {
+           ToastStore.warning( "First name is required.");
+        } else if (!this.state.userdata.lname) {
+          ToastStore.warning("Lname name is required.");
+        } else if (!this.state.userdata.phone) {
+          ToastStore.warning( "Phone number is required.");
+        } else if (!this.state.userdata.email) {
+          ToastStore.warning("Email id is required.");
+        } else if (this.state.userdata.email && !EMAIL_REGEXP.test(this.state.userdata.email)) {
+           ToastStore.warning("Invalid email id.");
+        } else if (!this.state.userdata.address) {
+          ToastStore.warning( "Address is required.");
+        }  else {
+            const data = new FormData(e.target);
+            data.set('userdata', JSON.stringify(this.state.userdata));
+            fetch('http://localhost:8080/api/profile/update', {
+                method: 'post',
+                body: data
+            }).then(function(response) {
+                    return response.json();             
+            }).then(function (result) {
+                console.log(result)
+                if (result.status) {
+                    localStorage.setItem('user_details',
+                        JSON.stringify( {
+                            'username' : result.data.User_Name,
+                            'full_name' : result.data.FirstName + ' ' + result.data.LastName,
+                            'fname':result.data.FirstName,
+                            'lname':result.data.LastName,
+                            'email':result.data.Email,
+                            'id':result.data.Id,
+                            'phone':result.data.Phone,
+                            'address':result.data.Address
+                        }))
+                ToastStore.success('Hey, Profile update successfully. !');
+                }
+            }).catch(error =>
+                ToastStore.error('Sorry, There was an error. !')
+            )    
+        }
     }
     render(){
         return (
             <div className="profile" >
                 <div className="bootstrap snippet">
             <div className="row">
-                <div className="col-sm-10"><h1>User name</h1></div>
+                <div className="col-sm-6"><h1>Hello, {this.localdata.fname} {this.localdata.lname}</h1></div>
             </div>
             <div className="row">
                 <div className="col-sm-3">
@@ -106,7 +134,7 @@ class Profile extends Component {
                                 
                                <div className="col-xs-6">
                                     <label htmlFor="username"><h4>User name</h4></label>
-                                    <input type="text" className="form-control" name="username" id="username" placeholder="user name" title="enter your user name."  onChange={ this.handleChange} value={this.state.userdata.username}/>
+                                    <input type="text" className="form-control" disabled name="username" id="username" placeholder="user name" title="enter your user name."  onChange={ this.handleChange} value={this.state.userdata.username}/>
                                 </div>
                             </div>
                             <div className="form-group">
@@ -127,8 +155,8 @@ class Profile extends Component {
                                 <div className="col-xs-12">
                                         <br />
                                         <button className="btn btn-lg btn-success" type="submit" onClick={this.commonsave} ><i className="glyphicon glyphicon-ok-sign"></i> Save</button>
-                                        &nbsp;&nbsp;
-                                        <button className="btn btn-lg" type="reset"><i className="glyphicon glyphicon-repeat"></i> Reset</button>
+                                        {/*&nbsp;&nbsp;
+                                        <button className="btn btn-lg" type="reset"><i className="glyphicon glyphicon-repeat"></i> Reset</button>*/}
                                     </div>
                             </div>
                         </form>
