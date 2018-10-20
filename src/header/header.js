@@ -67,10 +67,10 @@ class Header extends Component {
                         </span>
                         : 
                         <span>
-                            <Route exact path="/" component={Login} />
                             <Route path="/signup" component={Signup} />
                             <Route path="/login" component={Login} />
-                            <Route path="*" component={Login} />
+                            <Route path="*" exact component={Home} />
+                            
                         </span>
                          }
                  </div>

@@ -11,7 +11,9 @@ class Profile extends Component {
         this.commonsave = this.commonsave.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            userdata : this.localdata 
+            userdata : this.localdata,
+            file: '',
+            imagePreviewUrl: ''
         }
     }
     handleChange(event) {
@@ -63,7 +65,30 @@ class Profile extends Component {
             )    
         }
     }
+
+     handleImageChange(e) {
+        e.preventDefault();
+
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+        this.setState({
+            file: file,
+            imagePreviewUrl: reader.result
+        });
+        }
+        reader.readAsDataURL(file)
+    }
+
     render(){
+        let {imagePreviewUrl} = this.state;
+        let $imagePreview = null;
+        if (imagePreviewUrl) {
+        $imagePreview = (<img src={imagePreviewUrl}  className="avatar img-circle img-thumbnail" style={{width: '200px',height: '200px'}} alt="avatar"/>);
+        } else {
+        $imagePreview = (<img src={require('../images/defult_pic.png')} style={{width: '200px',height: '200px'}} className="avatar img-circle img-thumbnail" alt="avatar" />);
+        }
         return (
             <div className="profile" >
                 <div className="bootstrap snippet">
@@ -73,11 +98,12 @@ class Profile extends Component {
             <div className="row">
                 <div className="col-sm-3">
             <div className="text-center">
-                <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" className="avatar img-circle img-thumbnail" alt="avatar" />
+               <label htmlFor="file-upload"> {$imagePreview} </label>
+                {/*<img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" className="avatar img-circle img-thumbnail" alt="avatar" />*/}
                 <h6>Upload a different photo...</h6>
-                <input type="file" className="text-center center-block file-upload" />
+                <input type="file" className="text-center center-block file-upload" id="file-upload" onChange={(e)=>this.handleImageChange(e)} />
             </div>
-            <hr /><br />
+            <hr />
 
                 
                 <ul className="list-group">
