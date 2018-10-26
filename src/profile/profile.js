@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {ToastContainer, ToastStore} from 'react-toasts';
-
+import axios from 'axios';
 
 
 class Profile extends Component {
@@ -12,7 +12,7 @@ class Profile extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.state = {
             userdata : this.localdata,
-            file: '',
+            file: null,
             imagePreviewUrl: ''
         }
     }
@@ -64,13 +64,20 @@ class Profile extends Component {
                 ToastStore.error('Sorry, There was an error. !')
             )    
         }
+        console.log(this.localdata.id)
+         const fd = new FormData();
+         fd.append('myImage', this.state.file);
+         axios.post('http://localhost:8080/api/profile_pic/upload/' + this.state.userdata.id ,fd)
+         .then(res => {
+             console.log(res);
+         });
     }
 
      handleImageChange(e) {
         e.preventDefault();
 
         let reader = new FileReader();
-        let file = e.target.files[0];
+        let file = e.target.files[0] ;
 
         reader.onloadend = () => {
         this.setState({
@@ -101,7 +108,7 @@ class Profile extends Component {
                <label htmlFor="file-upload"> {$imagePreview} </label>
                 {/*<img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" className="avatar img-circle img-thumbnail" alt="avatar" />*/}
                 <h6>Upload a different photo...</h6>
-                <input type="file" className="text-center center-block file-upload" id="file-upload" onChange={(e)=>this.handleImageChange(e)} />
+                <input type="file" name="sampleFile" className="text-center center-block file-upload" id="file-upload" onChange={(e)=>this.handleImageChange(e)} />
             </div>
             <hr />
 
