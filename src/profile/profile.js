@@ -13,7 +13,7 @@ class Profile extends Component {
         this.state = {
             userdata : this.localdata,
             file: null,
-            imagePreviewUrl: ''
+            imagePreviewUrl: this.localdata.client_pic ? 'http://localhost:4200' + this.localdata.client_pic : ''
         }
     }
     handleChange(event) {
@@ -23,10 +23,11 @@ class Profile extends Component {
     }
     commonsave(e) {
         e.preventDefault();
+        console.log(this.refs.pwd.value)
        const EMAIL_REGEXP = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (!this.state.userdata.fname) {
+        if (!this.state.userdata.firstname) {
            ToastStore.warning( "First name is required.");
-        } else if (!this.state.userdata.lname) {
+        } else if (!this.state.userdata.lastname) {
           ToastStore.warning("Lname name is required.");
         } else if (!this.state.userdata.phone) {
           ToastStore.warning( "Phone number is required.");
@@ -37,40 +38,41 @@ class Profile extends Component {
         } else if (!this.state.userdata.address) {
           ToastStore.warning( "Address is required.");
         }  else {
-            const data = new FormData(e.target);
-            data.set('userdata', JSON.stringify(this.state.userdata));
-            fetch('http://localhost:8080/api/profile/update', {
-                method: 'post',
-                body: data
+            if (this.refs.pwd.value) {
+                this.state.userdata['pwd'] = this.refs.pwd.value;
+            } else {
+                 this.state.userdata['pwd'] = '';
+            }
+            const data = this.state.userdata;
+            fetch('http://localhost:1234/users/edit', {
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': localStorage.getItem('token')
+                },
+                body: JSON.stringify(data)
             }).then(function(response) {
                     return response.json();             
             }).then(function (result) {
-                console.log(result)
                 if (result.status) {
                     localStorage.setItem('user_details',
-                        JSON.stringify( {
-                            'username' : result.data.User_Name,
-                            'full_name' : result.data.FirstName + ' ' + result.data.LastName,
-                            'fname':result.data.FirstName,
-                            'lname':result.data.LastName,
-                            'email':result.data.Email,
-                            'id':result.data.Id,
-                            'phone':result.data.Phone,
-                            'address':result.data.Address
-                        }))
+                        JSON.stringify(result.data))
                 ToastStore.success('Hey, Profile update successfully. !');
+                } else if (result.message === 'Please change the user name and password.') {
+                    ToastStore.warning(result.message);
                 }
             }).catch(error =>
                 ToastStore.error('Sorry, There was an error. !')
             )    
         }
-        console.log(this.localdata.id)
-         const fd = new FormData();
+        if (this.state.file) {
+        const fd = new FormData();
          fd.append('myImage', this.state.file);
          axios.post('http://localhost:8080/api/profile_pic/upload/' + this.state.userdata.id ,fd)
          .then(res => {
-             console.log(res);
+            //  console.log(res);
          });
+        }
     }
 
      handleImageChange(e) {
@@ -92,15 +94,15 @@ class Profile extends Component {
         let {imagePreviewUrl} = this.state;
         let $imagePreview = null;
         if (imagePreviewUrl) {
-        $imagePreview = (<img src={imagePreviewUrl}  className="avatar img-circle img-thumbnail" style={{width: '200px',height: '200px'}} alt="avatar"/>);
+        $imagePreview = (<img src={imagePreviewUrl}  className="avatar img-circle img-thumbnail" style={{width: '200px',height: '200px'}} alt="profile pic" />);
         } else {
-        $imagePreview = (<img src={require('../images/defult_pic.png')} style={{width: '200px',height: '200px'}} className="avatar img-circle img-thumbnail" alt="avatar" />);
+        $imagePreview = (<img src={require('../images/defult_pic.png')} style={{width: '200px',height: '200px'}} className="avatar img-circle img-thumbnail" alt="profile pic" />);
         }
         return (
             <div className="profile" >
                 <div className="bootstrap snippet">
             <div className="row">
-                <div className="col-sm-6"><h1>Hello, {this.localdata.fname} {this.localdata.lname}</h1></div>
+                <div className="col-sm-6"><h1>Hello, {this.localdata.firstname} {this.localdata.lastname}</h1></div>
             </div>
             <div className="row">
                 <div className="col-sm-3">
@@ -138,14 +140,14 @@ class Profile extends Component {
                                 
                                 <div className="col-xs-6">
                                     <label htmlFor="first_name"><h4>First name</h4></label>
-                                    <input type="text" className="form-control" name="fname" id="first_name" onChange={ this.handleChange} value={this.state.userdata.fname} placeholder="first name" title="enter your first name if any." />
+                                    <input type="text" className="form-control" name="firstname" id="first_name" onChange={ this.handleChange} value={this.state.userdata.firstname} placeholder="first name" title="enter your first name if any." />
                                 </div>
                             </div>
                             <div className="form-group">
                                 
                                 <div className="col-xs-6">
                                     <label htmlFor="last_name"><h4>Last name</h4></label>
-                                    <input type="text" className="form-control" name="lname" id="last_name" placeholder="last name" title="enter your last name if any." onChange={ this.handleChange} value={this.state.userdata.lname}/>
+                                    <input type="text" className="form-control" name="lastname" id="last_name" placeholder="last name" title="enter your last name if any." onChange={ this.handleChange} value={this.state.userdata.lastname}/>
                                 </div>
                             </div>
                 
@@ -167,14 +169,14 @@ class Profile extends Component {
                                 
                                <div className="col-xs-6">
                                     <label htmlFor="username"><h4>User name</h4></label>
-                                    <input type="text" className="form-control" disabled name="username" id="username" placeholder="user name" title="enter your user name."  onChange={ this.handleChange} value={this.state.userdata.username}/>
+                                    <input type="text" className="form-control" name="username" id="username" placeholder="user name" title="enter your user name."  onChange={ this.handleChange} value={this.state.userdata.username}/>
                                 </div>
                             </div>
                             <div className="form-group">
                                 
                                 <div className="col-xs-6">
                                     <label htmlFor="password"><h4>Password</h4></label>
-                                    <input type="password" className="form-control" name="password" id="password" placeholder="password" title="enter your password." />
+                                    <input type="password" className="form-control" name="password" id="password" placeholder="password" title="enter your password." ref="pwd"/>
                                 </div>
                             </div>
                             <div className="form-group">
