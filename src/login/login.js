@@ -24,29 +24,20 @@ class Login extends Component {
         } else if(!this.refs.pwd.value) {
            ToastStore.warning('Password is required.');
         } else {
-            const data = new FormData(e.target);
-	     	data.set('userdata', JSON.stringify({
-                'uname':this.refs.uname.value,
-                'pwd':this.refs.pwd.value
-            }));
-            fetch('http://localhost:8080/api/login', {
+            const data = {
+                'username':this.refs.uname.value,
+                'password':this.refs.pwd.value
+            };
+            fetch('http://localhost:1234/users/login', {
 			method: 'post',
-			body: data
+            headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(data)
 		 }).then(function(response) {
 				return response.json();             
 		  }).then(function (result) {
             if (result.status) {
-                localStorage.setItem('user_details',
-                 JSON.stringify( {
-                    'username' : result.data.User_Name,
-                    'full_name' : result.data.FirstName + ' ' + result.data.LastName,
-                    'fname':result.data.FirstName,
-                    'lname':result.data.LastName,
-                    'email':result.data.Email,
-                    'id':result.data.Id,
-                    'phone':result.data.Phone,
-                    'address':result.data.Address
-                  }))
+                localStorage.setItem('user_details',JSON.stringify(result.data));
+                 localStorage.setItem('token',result.token);
 				document.getElementById("clear-form").reset();
 				ToastStore.success('Hey, You have login successfully. !');
                 window.location.href = '/home';				
